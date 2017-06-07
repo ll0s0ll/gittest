@@ -1,8 +1,8 @@
 MIDlet-Name: Cojira
-MIDlet-Version: 0.3
+MIDlet-Version: 0.4
 MIDlet-Vendor: Shun ITO
 MIDlet-Jar-URL: Cojira.jar
-MIDlet-Jar-Size: 124269
+MIDlet-Jar-Size: 124656
 MIDlet-Description: Radio app for BlackBerry
 MicroEdition-Profile: MIDP-2.0
 MicroEdition-Configuration: CLDC-1.1
@@ -10,8 +10,8 @@ MIDlet-1: Cojira,res/img/icon.png,
 RIM-MIDlet-Flags-1: 0
 Manifest-Version: 1.0
 RIM-COD-URL: Cojira.cod
-RIM-COD-Size: 64904
-RIM-COD-Creation-Time: 1435537206
+RIM-COD-Size: 64916
+RIM-COD-Creation-Time: 1491995879
 RIM-COD-Module-Name: Cojira
 RIM-COD-Module-Dependencies: net_rim_cldc,net_rim_networkapi,net_rim_xml,net_rim_xml_org,net_rim_ui_api,net_rim_bb_browser_field2_api,net_rim_bbapi_browser,net_rim_crypto
-RIM-COD-SHA1: b3 58 f6 38 1a 1a f7 02 e5 50 c5 0b c9 24 c6 77 96 1f bd ca
+RIM-COD-SHA1: 53 9d 24 1c da 1b d8 a0 73 5c 0a 9e 45 93 1a 04 15 fb 32 33
