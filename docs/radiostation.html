@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RadioStation &#8211; Raspberry Piで、なんちゃってFMラジオ放送局を作る</title>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <!--link rel="stylesheet" href="styles/xcode.css"-->
+    <!--link rel="stylesheet" href="styles/github.css"-->
+    <!--link rel="stylesheet" href="styles/github-gist.css"-->
+    <!--script src="highlight.pack.js"></script-->
+    <link rel="stylesheet" href="github.css">
+    <style type="text/css">
+      body {
+      width: 980px;
+      align: center;
+      margin-left : auto;
+      margin-right: auto;
+      /*font-family: arial, sans-serif;
+      font-size: medium;*/
+      /*padding-left: 10px;*/
+      /*padding-right: 10px;
+      font-size: 100%;*/
+      }
+    </style>
+  </head>
+  <body>
+    <!--h1>Hello World</h1>
+    <p>I'm hosted with GitHub Pages.</p-->
+
+    <div class="navi">
+      <p><a href="http://ll0s0ll.github.io/">Top</a> > Raspberry > RadioStation</p>
+    </div>
+
+    
+    <h1 class="entry-title">RadioStation &#8211; Raspberry Piで、なんちゃってFMラジオ放送局を作る</h1>
+
+    <p>ある日、<a href="http://www.oreilly.co.jp/books/9784873116907/" target="_blank">Raspberry Piクックブック</a>を読んでいたら、「Raspberry PiをFMトランスミッターにする」という記事が載っていました。これは面白いと思って試してみると、ラジオからあのスターウォーズの音楽が。これはやっぱり面白い！他にも何か使えるのでは？と思ったのが始まりです。</p>
+    <p>そこでなんとなく思いついたのが、ハイウェイラジオ。高速道路を走っていると、よく、ここからハイウェイラジオ1620kHz、なんて標識が出ているあれです。<a href="https://youtu.be/idRgEm3oFnc" title="【2013年東名】ハイウェイラジオ東京(NEXCO中日本東京支社) - YouTube" target="_blank">録音の動画</a>がありましたので、参考にさせていただきました。</p>
+
+<pre><code class="c">
+static char *device = "default";
+int err;
+snd_pcm_t *handle;
+snd_pcm_sframes_t frames;
+ 
+if ((err = snd_pcm_open(&handle, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+   printf("Playback open error: %s\n", snd_strerror(err));
+   exit(EXIT_FAILURE);
+}
+if ((err = snd_pcm_set_params(handle,
+                              SND_PCM_FORMAT_S16_LE,         // 符号付き16bit リトルエディアン
+                              SND_PCM_ACCESS_RW_INTERLEAVED, // インターリーブモード
+                              1,                             // モノラル
+                              16000,                         // サンプリングレート 16kHz
+                              1,                             // リサンプリング可
+                              65000)) < 0) {                 // レイテンシ 65msec                                                                                                                         
+   printf("Playback open error: %s\n", snd_strerror(err));
+   exit(EXIT_FAILURE);
+}
+//--- << ADD --------------------------------------------------------                     
+</code></pre>
+
+    
+    <p>また、真面目なところだと、災害等発生時に、仮設避難所などで、行政の情報や、交通情報、支援情報などを、内容を自動更新にして流せば、何かの役に立つかもしれません。災害発生時には、ラジオが情報源として役に立ったときいています。</p>
+    <p>※書籍の補足にもありましたが、<b>不法な電波の発信は電波法等の法令に違反する可能性があります。</b>通常の使い方では心配ないそうですが、あまりに長い電線や大きなアンテナは接続しないようにしてください。机の上でテストする分には、まったく電線を付けなくても十分聞こえました。</p>
+    <h2>概要</h2>
+    <p>指定されたテキストファイルを一行づつ読み込み、テキストを音声に変換し、音声を電波に変換しています。テキストファイルは文末まで読み上げると、先頭に戻り、繰り返し読み上げます。付属のsample.txtでは、プログラムを開始すると、ジングルが流れ、交通情報のようなものが読み上げられます。</p>
+    <h2>必要なもの</h2>
+    <ul>
+      <li>
+	<dl>
+	  <dt>pifm</dt>
+	  <dd>Raspberry PiをFMトランスミッタにしてしまうプログラム</dd>
+	</dl>
+      </li>
+      <li>
+	<dl>
+	  <dt>AquesTalk Pi</dt>
+	  <dd><a href="http://www.a-quest.com/" title="株式会社アクエスト" target="_blank">株式会社アクエスト</a>から公開されている音声合成プログラム。個人が非営利の目的に使う場合は無償で使える(感謝!!)。</dd>
+	</dl>
+      </li>
+    </ul>
+    <h2>使い方</h2>
+    <ol>
+      <li>pifmをダウンロード及び展開します。（ダウンロードは<a href="http://razzpisampler.oreilly.com/ch01.html" title="razzpisampler" target="_blank">こちら</a>から。）展開先のパスが必要となりますので、控えておいてください。</li>
+      <li>AquesTalk Piをダウンロード及び展開します。（ダウンロードは<a href="http://www.a-quest.com/products/aquestalkpi.html" title="AquesTalk Pi - Raspberry Pi用の音声合成" target="_blank">こちら</a>から。展開方法を説明したブログへのリンクも張られています。）展開先のパスが必要となりますので、控えておいてください。</li>
+      <li>RadioStationをダウンロード及び展開します。（ダウンロードは<a href="https://www.dropbox.com/s/2efuaeytnwb9ko7/radioStation.tar?dl=1" target="_blank">こちら</a>から。）以下は例。
+	<pre title="hoge"><code class="shell">
+$ mkdir radioStation
+$ cd radioStation
+$ wget https://dl.dropboxusercontent.com/u/260932024/radioStation.tar
+$ tar -xf radioStation.tar
+	</code></pre>
+      </li>
+      <li>RadioStationを実行します。オプション-aでAquesTalk Piへのパス、-fでラジオの周波数、-pでpifmへのパスを指定します。以下は例。
+	<pre title=""><code class="shell">
+$ ./radioStation sample.txt -a ~/aquestalkpi/AquesTalkPi -f 77.5 -p ~/pifm/pifm
+	</code></pre>
+      </li>
+      <li>RadioStationを終了する。ctrl-c等で終了させてください。</li>
+      <li>ヘルプを表示する。オプション-hを付けて実行してください。
+	<pre><code class="shell">
+$ ./radioStation -h
+	</code></pre>
+      </li>
+      <li>ソースコードが必要な方は、<a href="https://github.com/ll0s0ll/RadioStation" title="RadioStation · GitHub" target="_blank">GitHub</a>にのせていますので、ご利用ください。</li>
+      <h2></h2>
+      <p>以上</p>
+      <p><em>最終更新日2015年12月8日</em></p>
+      <dl>
+	<dt>関連する投稿</dt>
+	<dd><a href="https://ll0s0ll.wordpress.com/raspberrypi/alsa_to_pifm/" title="ALSAから出力された音声をpifmで再生する">ALSAから出力された音声をpifmで再生する</a></dd>
+      </dl>
+      
+      <pre>
+      <code class="python">
+@requires_authorization
+def somefunc(param1='', param2=0):
+    r'''A docstring'''
+    if param1 > param2: # interesting
+        print 'Gre\'ater'
+    return (param2 - param1 + 1 + 0b10l) or None
+
+class SomeClass:
+    pass
+
+>>> message = '''interpreter
+... prompt'''
+      </code>
+    </pre>
+
+    <pre>
+      <code class="shell">
+$ mkdir radioStation
+$ cd radioStation
+$ wget https://dl.dropboxusercontent.com/u/260932024/radioStation.tar
+$ tar -xf radioStation.tar
+      </code>
+    </pre>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
